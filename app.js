@@ -2,6 +2,7 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+const session = require('express-session')
 const routes = require('./routes')
 require('./config/mongoose')
 
@@ -20,6 +21,11 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(routes)
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUnintialized: true
+}))
 
 app.listen(port, () => {
   console.log(`Express is running on http://localhost:${port}`)
