@@ -13,8 +13,6 @@ const port = process.env.PORT
 const app = express()
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
-
-
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
 
@@ -31,8 +29,6 @@ db.on('error', () => {
 db.once('open', () => {
   console.log('mongodb connected!')
 })
-
-
 
 app.get('/', (req, res) => {
   Restaurant.find()
@@ -53,12 +49,6 @@ app.post('/restaurants', (req, res) => {
     .then(() => res.redirect('/'))
     .catch(error => console.log(error))
 })
-
-// app.get('/restaurants/:restaurant_id', (req, res) => {
-//   const restaurant = restaurantList.results.find( restaurant => restaurant.id.toString() === req.params.restaurant_id )
-//   res.render('show', { restaurant: restaurant })
-// })
-
 
 //browser chosen restaurant detail
 app.get('/restaurants/:id', (req, res) => {
@@ -111,12 +101,17 @@ app.post('/restaurants/:id/delete', (req, res) => {
 
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword
-  const restaurant = restaurantList.results.filter( restaurant => {
-    const nameLowerCase = restaurant.name.toLowerCase()
-    const categoryLowerCase = restaurant.category.toLowerCase()
-    return nameLowerCase.includes(keyword.toLowerCase()) || categoryLowerCase.includes(keyword.toLowerCase()) 
-  })
-    res.render('index', { restaurant: restaurant, keyword: keyword })
+  Restaurant.find()
+    .lean()
+    .then(restaurants => {
+      const resultRestaurants = restaurants.filter( restaurant => {
+        const nameLowerCase = restaurant.name.toLowerCase()
+        const categoryLowerCase = restaurant.category.toLowerCase()
+        return nameLowerCase.includes(keyword.toLowerCase()) || categoryLowerCase.includes(keyword.toLowerCase()) 
+      })
+      res.render('index', {restaurants: resultRestaurants, keyword})
+    })
+    .catch(error => console.log(error))
 })
 
 app.listen(port, () => {
