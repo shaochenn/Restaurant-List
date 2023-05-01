@@ -25,7 +25,7 @@ app.use(routes)
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUnintialized: true
+  saveUninitialized: true
 }))
 usePassport(app)
 
