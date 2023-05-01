@@ -5,7 +5,7 @@
       <a href="/restaurants/{{restaurant._id}}/edit" class="btn btn-major">edit</a>
     </div>
     <div class="col">
-      <form action="/restaurants/{{ restaurant._id }}/delete" method="POST">
+      <form action="/restaurants/{{ restaurant._id }}?method=DELETE" method="POST">
         <button type="submit">delete</button>
       </form>
     </div>
