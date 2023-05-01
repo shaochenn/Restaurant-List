@@ -1,5 +1,6 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
 const restaurantList = require('./restaurant.json')
 const mongoose = require('mongoose')
 const Restaurant = require('./models/restaurant')
@@ -13,11 +14,13 @@ const app = express()
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 
+
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
 
 // setting static files
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended: true }))
 
 const db = mongoose.connection
 // 連線異常
@@ -38,9 +41,29 @@ app.get('/', (req, res) => {
     .catch(error => console.error(error))
 })
 
-app.get('/restaurants/:restaurant_id', (req, res) => {
-  const restaurant = restaurantList.results.find( restaurant => restaurant.id.toString() === req.params.restaurant_id )
-  res.render('show', { restaurant: restaurant })
+app.get('/restaurants/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/restaurants', (req, res) => {
+  const { name, name_en, category, image, location, phone, google_map, rating, description } = req.body
+
+  return Restaurant.create({ name, name_en, category, image, location, phone, google_map, rating, description })
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
+})
+
+// app.get('/restaurants/:restaurant_id', (req, res) => {
+//   const restaurant = restaurantList.results.find( restaurant => restaurant.id.toString() === req.params.restaurant_id )
+//   res.render('show', { restaurant: restaurant })
+// })
+
+app.get('/restaurants/:id', (req, res) => {
+  const id = req.params.id
+  return Restaurant.findById(id)
+    .lean()
+    .then((restaurant) => res.render('show', { restaurant }))
+    .catch(error => console.log(error))
 })
 
 app.get('/search', (req, res) => {

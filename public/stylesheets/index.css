@@ -54,8 +54,8 @@ header {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover {
-  transform: scale(1.1);
+.restaurant-card:hover {
+  transform: scale(1.03);
   z-index: 10;
 }
 
