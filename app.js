@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const session = require('express-session')
 const routes = require('./routes')
+const usePassport = require('./config/passport')
 require('./config/mongoose')
 
 if (process.env.NODE_ENV !== 'production') {
@@ -26,6 +27,7 @@ app.use(session({
   resave: false,
   saveUnintialized: true
 }))
+usePassport(app)
 
 app.listen(port, () => {
   console.log(`Express is running on http://localhost:${port}`)
