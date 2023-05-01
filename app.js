@@ -41,6 +41,7 @@ app.get('/', (req, res) => {
     .catch(error => console.error(error))
 })
 
+//create a new restaurant
 app.get('/restaurants/new', (req, res) => {
   return res.render('new')
 })
@@ -58,6 +59,8 @@ app.post('/restaurants', (req, res) => {
 //   res.render('show', { restaurant: restaurant })
 // })
 
+
+//browser chosen restaurant detail
 app.get('/restaurants/:id', (req, res) => {
   const id = req.params.id
   return Restaurant.findById(id)
@@ -65,6 +68,38 @@ app.get('/restaurants/:id', (req, res) => {
     .then((restaurant) => res.render('detail', { restaurant }))
     .catch(error => console.log(error))
 })
+
+//modify restautant info
+app.get('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
+  return Restaurant.findById(id)
+    .lean()
+    .then((restaurant) => res.render('edit', { restaurant }))
+    .catch(error => console.log(error))
+})
+
+app.post('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
+  const { name, name_en, category, image, location, phone, google_map, rating, description } = req.body
+
+  return Restaurant.findById(id)
+    .then(restaurant => {
+      // restaurant = { name, name_en, category, image, location, phone, google_map, rating, description } 解構賦值的寫法沒有成功
+      restaurant.name = name
+      restaurant.name_en = name_en
+      restaurant.category = category
+      restaurant.image = image
+      restaurant.location = location
+      restaurant.phone = phone
+      restaurant.google_map = google_map
+      restaurant.rating = rating
+      restaurant.description = description
+      return restaurant.save()
+    })
+    .then(() => res.redirect(`/restaurants/${id}`))
+    .catch(error => console.log(error))
+})
+
 
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword
